@@ -496,19 +496,24 @@ internal class Example : MonoBehaviour {
 	}
 
 
+	private string Str(double[] a)
+    {
+		return string.Join(", ", a);
+    }
+
 	// https://gis.stackexchange.com/questions/66/trilateration-using-3-latitude-longitude-points-and-3-distances
 	private Tuple<double, double> Trilateration(double DistA, double DistB, double DistC)
     {
 		var earthR = 6371;
 		// A
-		var LonA = -121.963477	   ;
-		var LatA = 37.418436	   ;
+		var LatA = 32.813129;
+		var LonA = -96.795350;
 		// B
-		var LatB = 37.417243	   ;
-		var LonB = -121.961889	   ;
+		var LatB = 32.813083;
+		var LonB = -96.795375;
 		// C
-		var LatC = 37.418692	   ;
-		var LonC = -121.960194	   ;
+		var LatC = 32.813089;
+		var LonC = -96.795333;
 		// using authalic sphere
 		// Convert geodetic Lat/Long to ECEF xyz
 		//    1. Convert Lat/Long to radians
@@ -529,26 +534,38 @@ internal class Example : MonoBehaviour {
 		var p1 = new double[] { xA, yA, zA };
 		var p2 = new double[] { xB, yB, zB };
 		var p3 = new double[] { xC, yC, zC };
+		Debug.Log($"Sean - p1: ${Str(p1)}");
+		Debug.Log($"Sean - p2: ${Str(p2)}");
+		Debug.Log($"Sean - p3: ${Str(p3)}");
 
 		var ex = Div(Diff(p2, p1), Magnitude(Diff(p2, p1)));
+		Debug.Log($"Sean - ex: ${Str(ex)}");
+
 		var i = Dot(ex, Diff(p3, p1));
 		var diff = Diff(Diff(p3, p1), Mul(ex, i));
 		var ey = Normalize(diff);
+		Debug.Log($"Sean - ey: ${Str(ey)}");
 		var ez = Cross(ex, ey);
+		Debug.Log($"Sean - ez: ${Str(ez)}");
 		var d = Magnitude(Diff(p2, p1));
 		var j = Dot(ey, Diff(p3, p1));
 
-		var x = Pow(DistA, 2) - Pow(DistB, 2) + Pow(d, 2) / (2 * d);
+		var x = (Pow(DistA, 2) - Pow(DistB, 2) + Pow(d, 2)) / (2 * d);
 		var y = ((Pow(DistA, 2) - Pow(DistC, 2) + Pow(i, 2) + Pow(j, 2)) / (2 * j)) - ((i / j) * x);
+		Debug.Log($"Sean - x: ${x}");
+		Debug.Log($"Sean - y: ${y}");
 
 		var z = Sqrt(Pow(DistA, 2) - Pow(x, 2) - Pow(y, 2));
+		Debug.Log($"Sean - z: ${z}");
 		var triPt = Add(Add(p1, Mul(ex, x)), Add(Mul(ey, y), Mul(ez, z)));
+		Debug.Log($"Sean - triPt: ${Str(triPt)}");
 		var lat =  ToDegrees(Asin(triPt[2] / earthR));
 		var lon = ToDegrees(Atan2(triPt[1], triPt[0]));
 		return Tuple.Create(lat, lon);
 	}
 
-	private void OnBeaconRangeChanged(Beacon[] beacons) { // 
+	private void OnBeaconRangeChanged(Beacon[] beacons) {
+		var distances = new double[] { 0, 0, 0 };
 		foreach (Beacon b in beacons) {
 			var index = mybeacons.IndexOf(b);
 			if (index == -1) {
@@ -556,20 +573,29 @@ internal class Example : MonoBehaviour {
 			} else {
 				mybeacons[index] = b;
 			}
+			var minor = mybeacons[index].minor;
+			distances[minor] = mybeacons[index].accuracy;
 		}
-		var distances = new double[3];
+		try
+        {
+
+			var calcLocation = Trilateration(distances[0], distances[1], distances[2]);
+			Debug.Log($"Sean - Calculated location: ${calcLocation.Item1}, ${calcLocation.Item2}");
+
+			// calculate lat/long
+			txt_calcLatLong.text = "Lat: " + calcLocation.Item1 + " Long: " + calcLocation.Item2;
+		} catch(Exception e)
+        {
+			Debug.Log($"Sean - e: ${e}");
+			Debug.Log($"Sean - stack: ${e.StackTrace}");
+		}
 		for (int i = mybeacons.Count - 1; i >= 0; --i) {
 			if (mybeacons[i].lastSeen.AddSeconds(10) < DateTime.Now) {
 				mybeacons.RemoveAt(i);
 			}
-			distances[i] = mybeacons[i].rssi;
 		}
 		OnLocationUpdate();
 		DisplayOnBeaconFound();
-		var calcLocation = Trilateration(distances[0], distances[1], distances[2]);
-
-		// calculate lat/long
-		txt_calcLatLong.text = "Lat: " + calcLocation.Item1 + " Long: " + calcLocation.Item2;
 	}
 
 	private void DisplayOnBeaconFound() {
