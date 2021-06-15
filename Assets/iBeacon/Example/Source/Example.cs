@@ -3,7 +3,8 @@ using UnityEngine.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+using static Vector3D;
+using static System.Math;
 
 public enum BroadcastMode {
 	send	= 0,
@@ -481,9 +482,70 @@ internal class Example : MonoBehaviour {
 
 		// Access granted and location value could be retrieved
 		txt_location.text = "Lat: " + Input.location.lastData.latitude + " Long: " + Input.location.lastData.longitude;
-		// calculate lat/long
-		txt_calcLatLong.text = "Lat: " + Input.location.lastData.latitude + " Long: " + Input.location.lastData.longitude;
 
+	}
+
+	public double ToRadians(double degrees)
+	{
+		return (PI / 180) * degrees;
+	}
+
+	public double ToDegrees(double radians)
+	{
+		return (180 / PI) * radians;
+	}
+
+
+	// https://gis.stackexchange.com/questions/66/trilateration-using-3-latitude-longitude-points-and-3-distances
+	private Tuple<double, double> Trilateration(double DistA, double DistB, double DistC)
+    {
+		var earthR = 6371;
+		// A
+		var LonA = -121.963477	   ;
+		var LatA = 37.418436	   ;
+		// B
+		var LatB = 37.417243	   ;
+		var LonB = -121.961889	   ;
+		// C
+		var LatC = 37.418692	   ;
+		var LonC = -121.960194	   ;
+		// using authalic sphere
+		// Convert geodetic Lat/Long to ECEF xyz
+		//    1. Convert Lat/Long to radians
+		//    2. Convert Lat/Long(radians) to ECEF
+
+		var xA = earthR * (Cos(ToRadians(LatA)) * Cos(ToRadians(LonA)));
+		var yA = earthR * (Cos(ToRadians(LatA)) * Sin(ToRadians(LonA)));
+		var zA = earthR * Sin(ToRadians(LatA));
+
+		var xB = earthR * (Cos(ToRadians(LatB)) * Cos(ToRadians(LonB)));
+		var yB = earthR * (Cos(ToRadians(LatB)) * Sin(ToRadians(LonB)));
+		var zB = earthR * Sin(ToRadians(LatB));
+
+		var xC = earthR * (Cos(ToRadians(LatC)) * Cos(ToRadians(LonC)));
+		var yC = earthR * (Cos(ToRadians(LatC)) * Sin(ToRadians(LonC)));
+		var zC = earthR * Sin(ToRadians(LatC));
+
+		var p1 = new double[] { xA, yA, zA };
+		var p2 = new double[] { xB, yB, zB };
+		var p3 = new double[] { xC, yC, zC };
+
+		var ex = Div(Diff(p2, p1), Magnitude(Diff(p2, p1)));
+		var i = Dot(ex, Diff(p3, p1));
+		var diff = Diff(Diff(p3, p1), Mul(ex, i));
+		var ey = Normalize(diff);
+		var ez = Cross(ex, ey);
+		var d = Magnitude(Diff(p2, p1));
+		var j = Dot(ey, Diff(p3, p1));
+
+		var x = Pow(DistA, 2) - Pow(DistB, 2) + Pow(d, 2) / (2 * d);
+		var y = ((Pow(DistA, 2) - Pow(DistC, 2) + Pow(i, 2) + Pow(j, 2)) / (2 * j)) - ((i / j) * x);
+
+		var z = Sqrt(Pow(DistA, 2) - Pow(x, 2) - Pow(y, 2));
+		var triPt = Add(Add(p1, Mul(ex, x)), Add(Mul(ey, y), Mul(ez, z)));
+		var lat =  ToDegrees(Asin(triPt[2] / earthR));
+		var lon = ToDegrees(Atan2(triPt[1], triPt[0]));
+		return Tuple.Create(lat, lon);
 	}
 
 	private void OnBeaconRangeChanged(Beacon[] beacons) { // 
@@ -495,13 +557,19 @@ internal class Example : MonoBehaviour {
 				mybeacons[index] = b;
 			}
 		}
+		var distances = new double[3];
 		for (int i = mybeacons.Count - 1; i >= 0; --i) {
 			if (mybeacons[i].lastSeen.AddSeconds(10) < DateTime.Now) {
 				mybeacons.RemoveAt(i);
 			}
+			distances[i] = mybeacons[i].rssi;
 		}
 		OnLocationUpdate();
 		DisplayOnBeaconFound();
+		var calcLocation = Trilateration(distances[0], distances[1], distances[2]);
+
+		// calculate lat/long
+		txt_calcLatLong.text = "Lat: " + calcLocation.Item1 + " Long: " + calcLocation.Item2;
 	}
 
 	private void DisplayOnBeaconFound() {
