@@ -5,9 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/iBeacon/Example/Scenes/Examples.unity
     guid: 5531c81088f374535951e8a300516581
+  - enabled: 1
+    path: Assets/Scenes/ARScene.unity
+    guid: ccb0201ddd64f4d9d9e5ba7e8d072127
   m_configObjects:
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 651bb6b683842437a881b27d52c5c1e8, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1f7fb34762bf3468aa9c06ff08f81507, type: 2}
