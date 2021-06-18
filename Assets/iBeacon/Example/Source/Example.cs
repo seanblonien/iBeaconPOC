@@ -55,10 +55,6 @@ internal class Example : MonoBehaviour {
     [SerializeField]
     private Text txt_actualMinor;
     private string s_Minor;
-    [SerializeField]
-    private Text txt_location;
-    [SerializeField]
-    private Text txt_calcLatLong;
 
     /** Input **/
     // beacontype
@@ -164,7 +160,6 @@ internal class Example : MonoBehaviour {
         f_ScrollViewContentRectWidth = ((RectTransform)go_FoundBeacon.transform).rect.width;
         f_ScrollViewContentRectHeight = ((RectTransform)go_FoundBeacon.transform).rect.height;
         BluetoothState.Init();
-        Input.location.Start();
     }
 
     private void SwitchToStatus() {
@@ -456,35 +451,7 @@ internal class Example : MonoBehaviour {
         txt_BroadcastState_LabelText.text = bs_State.ToString();
     }
 
-    private void OnLocationUpdate()
-    {
-        Input.location.Start(0.1f, 0.1f);
-
-        // Wait until service initializes
-        var started = DateTime.Now;
-        var isPastMax = false;
-        while (Input.location.status == LocationServiceStatus.Initializing && isPastMax)
-        {
-            var current = DateTime.Now;
-            if(started.Subtract(current).TotalSeconds > 5)
-            {
-                isPastMax = true;
-            }
-        }
-
-        // Service didn't initialize in 20 seconds
-        if (isPastMax || Input.location.status == LocationServiceStatus.Failed)
-        {
-            txt_location.text = "failed";
-            return;
-        }
-
-        // Access granted and location value could be retrieved
-        txt_location.text = "Lat: " + Input.location.lastData.latitude + " Long: " + Input.location.lastData.longitude;
-    }
-
     private void OnBeaconRangeChanged(Beacon[] beacons) {
-        var distances = new double[] { 0, 0, 0 };
         foreach (Beacon b in beacons) {
             var index = mybeacons.IndexOf(b);
             if (index == -1) {
@@ -492,27 +459,12 @@ internal class Example : MonoBehaviour {
             } else {
                 mybeacons[index] = b;
             }
-            var minor = mybeacons[index].minor;
-            distances[minor] = mybeacons[index].accuracy;
-        }
-        try
-        {
-            var calcLocation = Trilateration(distances[0], distances[1], distances[2]);
-            Debug.Log($"Sean - Calculated location: ${calcLocation.Item1}, ${calcLocation.Item2}");
-
-            // calculate lat/long
-            txt_calcLatLong.text = "Lat: " + calcLocation.Item1 + " Long: " + calcLocation.Item2;
-        } catch(Exception e)
-        {
-            Debug.Log($"Sean - e: ${e}");
-            Debug.Log($"Sean - stack: ${e.StackTrace}");
         }
         for (int i = mybeacons.Count - 1; i >= 0; --i) {
             if (mybeacons[i].lastSeen.AddSeconds(10) < DateTime.Now) {
                 mybeacons.RemoveAt(i);
             }
         }
-        OnLocationUpdate();
         DisplayOnBeaconFound();
     }
 
