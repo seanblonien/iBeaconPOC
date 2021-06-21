@@ -2,10 +2,12 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
+// https://stackoverflow.com/questions/41783288/auto-updating-gps-location
 public class LocationService : MonoBehaviour
 {
     public Text LatLongText;
     private int updateNum = 0;
+    private bool debug = false;
 
     IEnumerator coroutine;
 
@@ -47,7 +49,10 @@ public class LocationService : MonoBehaviour
     private void DoUpdate()
     {
         var p = "Location: " + Input.location.lastData.latitude.ToString("R") + " " + Input.location.lastData.longitude.ToString("R") + " " + Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp;
-        print("#" + updateNum + ": " + p);
+        if(debug)
+        {
+            print("#" + updateNum + ": " + p);
+        }
         LatLongText.text = p;
         updateNum++;
     }
