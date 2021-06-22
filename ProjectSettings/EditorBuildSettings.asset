@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/iBeacon/Example/Scenes/Examples.unity
     guid: 5531c81088f374535951e8a300516581
   - enabled: 1
-    path: Assets/Scenes/ARScene.unity
+    path: Assets/Scenes/ARScene_01.unity
     guid: ccb0201ddd64f4d9d9e5ba7e8d072127
   m_configObjects:
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: 651bb6b683842437a881b27d52c5c1e8, type: 2}
