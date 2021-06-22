@@ -115,27 +115,27 @@ public class iBeaconReceiver : MonoBehaviour {
 #endif
 		if (m_instance != null && m_instance != this) {
 #if UNITY_EDITOR
-			DestroyImmediate(this);
+			//DestroyImmediate(this);
 #else
 			Destroy(this);
 #endif
 			return;
 		}
-#if UNITY_EDITOR
-		if (!gameObject.name.Equals(BluetoothState.NAME)) {
-			var obj = GameObject.Find(BluetoothState.NAME);
-			if (obj == null) {
-				gameObject.name = BluetoothState.NAME;
-			} else {
-	#if !iBeaconDummy
-				var component = obj.AddComponent<iBeaconReceiver>();
-				component._regions = _regions;
-				DestroyImmediate(this);
-				return;
-	#endif
-			}
-		}
-#endif
+//#if UNITY_EDITOR
+//		if (!gameObject.name.Equals(BluetoothState.NAME)) {
+//			var obj = GameObject.Find(BluetoothState.NAME);
+//			if (obj == null) {
+//				gameObject.name = BluetoothState.NAME;
+//			} else {
+//	#if !iBeaconDummy
+//				var component = obj.AddComponent<iBeaconReceiver>();
+//				component._regions = _regions;
+//				DestroyImmediate(this);
+//				return;
+//	#endif
+//			}
+//		}
+//#endif
 		m_instance = this;
 		initialized = false;
 		receiving = false;

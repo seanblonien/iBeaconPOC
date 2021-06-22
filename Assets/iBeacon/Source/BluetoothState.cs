@@ -95,7 +95,7 @@ public class BluetoothState : MonoBehaviour {
 	private void Awake() {
 		if (m_instance != null && m_instance != this) {
 #if UNITY_EDITOR
-			DestroyImmediate(this);
+			//DestroyImmediate(this);
 #else
 			Destroy(this);
 #endif
@@ -104,19 +104,19 @@ public class BluetoothState : MonoBehaviour {
 		m_instance = this;
 		name = NAME;
 		initialized = false;
-#if UNITY_EDITOR
-	#if UNITY_ANDROID
-		CheckManifest();
-	#endif
-	#if UNITY_IOS
-		if (string.IsNullOrEmpty(bluetoothPeripheralUsageDescription)) {
-			bluetoothPeripheralUsageDescription = _bluetoothPeripheralUsageDescription;
-		} else {
-			_bluetoothPeripheralUsageDescription = bluetoothPeripheralUsageDescription;
-		}
-		CheckDescriptions();
-	#endif
-#endif
+//#if UNITY_EDITOR
+//	#if UNITY_ANDROID
+//		CheckManifest();
+//	#endif
+//	#if UNITY_IOS
+//		if (string.IsNullOrEmpty(bluetoothPeripheralUsageDescription)) {
+//			bluetoothPeripheralUsageDescription = _bluetoothPeripheralUsageDescription;
+//		} else {
+//			_bluetoothPeripheralUsageDescription = bluetoothPeripheralUsageDescription;
+//		}
+//		CheckDescriptions();
+//	#endif
+//#endif
 	}
 
 	private void OnDestroy() {
