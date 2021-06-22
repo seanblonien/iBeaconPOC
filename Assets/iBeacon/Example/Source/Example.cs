@@ -30,6 +30,13 @@ internal class Example : MonoBehaviour {
 
     private Text _bluetoothText;
 
+    [SerializeField]
+    private GameObject objectImmediate;
+    [SerializeField]
+    private GameObject objectNear;
+    [SerializeField]
+    private GameObject objectFar;
+
     /*** Beacon Properties ***/
     // Beacontype
     [SerializeField] //to access in editor, avoiding public varible declaration
@@ -508,6 +515,9 @@ internal class Example : MonoBehaviour {
                 Texts[5].text	= b.minor.ToString();
                 Texts[6].text 	= "Range:";
                 Texts[7].text	= b.range.ToString();
+                objectImmediate.SetActive(b.range == BeaconRange.IMMEDIATE);
+                objectNear.SetActive(b.range == BeaconRange.NEAR);
+                objectFar.SetActive(b.range == BeaconRange.FAR);
                 Texts[8].text 	= "Strength:";
                 Texts[9].text	= b.strength.ToString() + " db";
                 Texts[10].text 	= "Accuracy:";
