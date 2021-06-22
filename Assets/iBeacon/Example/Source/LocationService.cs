@@ -1,33 +1,39 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
-public class TestLocationService : MonoBehaviour
+// https://stackoverflow.com/questions/41783288/auto-updating-gps-location
+public class LocationService : MonoBehaviour
 {
+    public Text LatLongText;
+    private int updateNum = 0;
+    private bool debug = false;
+
+    IEnumerator coroutine;
+
     IEnumerator Start()
     {
-        // First, check if user has location service enabled
+        coroutine = updateGPS();
+
         if (!Input.location.isEnabledByUser)
             yield break;
 
-        // Start service before querying location
         Input.location.Start();
 
-        // Wait until service initializes
         int maxWait = 20;
         while (Input.location.status == LocationServiceStatus.Initializing && maxWait > 0)
         {
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(0.1f);
             maxWait--;
         }
 
-        // Service didn't initialize in 20 seconds
         if (maxWait < 1)
         {
             print("Timed out");
             yield break;
         }
 
-        // Connection has failed
+
         if (Input.location.status == LocationServiceStatus.Failed)
         {
             print("Unable to determine device location");
@@ -35,11 +41,42 @@ public class TestLocationService : MonoBehaviour
         }
         else
         {
-            // Access granted and location value could be retrieved
-            print("Location: " + Input.location.lastData.latitude + " " + Input.location.lastData.longitude + " " + Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp);
+            DoUpdate();
+            StartCoroutine(coroutine);
         }
+    }
 
-        // Stop service if there is no need to query location updates continuously
+    private void DoUpdate()
+    {
+        var p = "Location: " + Input.location.lastData.latitude.ToString("R") + " " + Input.location.lastData.longitude.ToString("R") + " " + Input.location.lastData.altitude + " " + Input.location.lastData.horizontalAccuracy + " " + Input.location.lastData.timestamp;
+        if(debug)
+        {
+            print("#" + updateNum + ": " + p);
+        }
+        LatLongText.text = p;
+        updateNum++;
+    }
+
+    IEnumerator updateGPS()
+    {
+        float UPDATE_TIME = 1f;
+        WaitForSeconds updateTime = new WaitForSeconds(UPDATE_TIME);
+
+        while (true)
+        {
+            DoUpdate();
+            yield return updateTime;
+        }
+    }
+
+    void stopGPS()
+    {
         Input.location.Stop();
+        StopCoroutine(coroutine);
+    }
+
+    void OnDisable()
+    {
+        stopGPS();
     }
 }
