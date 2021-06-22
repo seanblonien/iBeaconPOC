@@ -1,0 +1,132 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6081104491389295679
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6081104491389295673}
+  - component: {fileID: 6081104491389295672}
+  - component: {fileID: 6081104491389295675}
+  - component: {fileID: 6081104491389295674}
+  m_Layer: 0
+  m_Name: IBeacon
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6081104491389295673
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6081104491389295679}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6081104491389295672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6081104491389295679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85fb85028b3604cb09dadb35fe2bcd71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bluetoothPeripheralUsageDescription: Bluetooth access needed for beacon detection.
+--- !u!114 &6081104491389295675
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6081104491389295679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40ff212c9cb4f4e559f1c187a5694ca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _regions:
+  - _regionName: GSNETX
+    _beacon:
+      _type: 1
+      _UUID: f7bd22e8-121a-4105-b7f2-e5c94f01d197
+      _major: 1
+      _minor: 0
+      _instance: 
+      _rssi: 0
+      _range: 0
+      _strength: 0
+      _accuracy: 0
+      _rawTelemetry: 
+      _regionName: 
+  - _regionName: GSNETX
+    _beacon:
+      _type: 1
+      _UUID: f7bd22e8-121a-4105-b7f2-e5c94f01d197
+      _major: 1
+      _minor: 1
+      _instance: 
+      _rssi: 0
+      _range: 0
+      _strength: 0
+      _accuracy: 0
+      _rawTelemetry: 
+      _regionName: 
+  - _regionName: GSNETX
+    _beacon:
+      _type: 1
+      _UUID: f7bd22e8-121a-4105-b7f2-e5c94f01d197
+      _major: 1
+      _minor: 2
+      _instance: 
+      _rssi: 0
+      _range: 0
+      _strength: 0
+      _accuracy: 0
+      _rawTelemetry: 
+      _regionName: 
+  _detectionTimespan: 0
+  _scanPeriod: 0
+  _betweenScanPeriod: 0
+--- !u!114 &6081104491389295674
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6081104491389295679}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f70193faf649446ea64ca859ede1b6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _region:
+    _regionName: 
+    _beacon:
+      _type: 0
+      _UUID: 
+      _major: 0
+      _minor: 0
+      _instance: 
+      _rssi: 127
+      _range: 0
+      _strength: 127
+      _accuracy: -1
+      _rawTelemetry: 
+      _regionName: 
+  _txPower: 0
+  _powerLevel: 0
+  _mode: 0
