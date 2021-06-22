@@ -16,12 +16,22 @@ MonoBehaviour:
   m_GuidHigh: 15105834036453139584
   m_Images:
   - m_SerializedGuid:
-      m_GuidLow: 4857219363360050466
-      m_GuidHigh: 10116036157181375109
+      m_GuidLow: 4725827335748109863
+      m_GuidHigh: 2950588416174502801
     m_SerializedTextureGuid:
-      m_GuidLow: 3789319833273642531
-      m_GuidHigh: 15964493360604398699
-    m_Size: {x: 0.3, y: 0.30060893}
+      m_GuidLow: 351692113627583977
+      m_GuidHigh: 9319164525510401435
+    m_Size: {x: 0.5, y: 0.5010149}
     m_SpecifySize: 1
     m_Name: shapes
+    m_Texture: {fileID: 0}
+  - m_SerializedGuid:
+      m_GuidLow: 5495255482480433895
+      m_GuidHigh: 17405866011170012304
+    m_SerializedTextureGuid:
+      m_GuidLow: 14190304958243160699
+      m_GuidHigh: 844965161711191992
+    m_Size: {x: 0.3, y: 0.3}
+    m_SpecifySize: 1
+    m_Name: jira-avatar
     m_Texture: {fileID: 0}
