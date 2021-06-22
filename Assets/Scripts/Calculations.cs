@@ -40,7 +40,7 @@ public class Calculations
     /// </summary>
     /// <param name="a"></param>
     /// <param name="b"></param>
-    /// <returns></returns>
+    /// <returns></returns> 
     static private double _Distance(Tuple<double, double> a, Tuple<double, double> b)
     {
         var lat1 = a.Item1;
