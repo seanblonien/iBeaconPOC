@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/iBeaconExample.unity
+    path: Assets/Scenes/iBeacon.unity
     guid: 5531c81088f374535951e8a300516581
   - enabled: 1
     path: Assets/Scenes/ARScene.unity
