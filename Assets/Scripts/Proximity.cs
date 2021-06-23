@@ -4,8 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 
-class ProximityShapes : MonoBehaviour
+class Proximity : MonoBehaviour
 {
+    // GameObjects to show/hide according to proximity
     [SerializeField]
     private GameObject objectImmediate;
     [SerializeField]
@@ -13,6 +14,7 @@ class ProximityShapes : MonoBehaviour
     [SerializeField]
     private GameObject objectFar;
 
+    // UI text fields for displaying values
     [SerializeField]
     private Text range;
     [SerializeField]
@@ -21,11 +23,18 @@ class ProximityShapes : MonoBehaviour
     private Text _statusText;
 
     private List<Beacon> _beacons = new List<Beacon>();
+
+    // Co-routine for enabling bluetooth asynchronously
     IEnumerator coroutine;
 
+    readonly private float bluetoothWaitTime = 1f;
+
+    /// <summary>
+    /// Initializes Bluetooth and registers the BeaconRangeChange event with the iBeacon receiver
+    /// </summary>
     private void Start()
     {
-        Debug.Log("SeaniBeacon - enble bluetooth");
+        Debug.Log("Enabling bluetooth");
         BluetoothState.EnableBluetooth();
         BluetoothState.BluetoothStateChangedEvent += delegate (BluetoothLowEnergyState state) {
             switch (state)
@@ -62,31 +71,39 @@ class ProximityShapes : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
+    /// <summary>
+    /// <a href="https://docs.unity3d.com/Manual/Coroutines.html">Co-routine</a> for waiting for BLE to be turned on and start iBeacon scanning.
+    /// </summary>
+    /// <returns>Enumerator that waits for BLE to be enabled</returns>
     private IEnumerator StartScan()
     {
-        // !!! Bluetooth has to be turned on !!! TODO
-        Debug.Log("SeaniBeacon - while loop");
+        // Bluetooth has to be turned on
+        // Unitl bluetooth is on, wait for the state to change indefinitely
         while(BluetoothState.GetBluetoothLEStatus() != BluetoothLowEnergyState.POWERED_ON)
         {
-            Debug.Log("SeaniBeacon - LE state: " + BluetoothState.GetBluetoothLEStatus().ToString());
-            yield return new WaitForSeconds(1f);
+            Debug.Log("Waiting for BLE with state: " + BluetoothState.GetBluetoothLEStatus().ToString());
+            yield return new WaitForSeconds(bluetoothWaitTime);
         }
         iBeaconReceiver.Scan();
-        Debug.Log("SeaniBeacon - Listening for beacons");
+        Debug.Log("Listening for iBeacons");
         yield break;
     }
 
-
+    /// <summary>
+    /// Beacon change event handler.
+    /// </summary>
+    /// <param name="beacons">The current list of beacons picked up by the iBeaconReceiver</param>
     private void OnBeaconRangeChanged(Beacon[] beacons)
     {
-        Debug.Log("SeaniBeacon - Beacons changed " + DateTime.Now.ToString());
-        Debug.Log("SeaniBeacon - Beacons changed count " + beacons.Length);
-        Debug.Log("SeaniBeacon - Beacons changed new " + _beacons.IndexOf(beacons[0]).ToString());
         AddBeacons(beacons);
         RemoveOldBeacons();
         UpdateText();
     }
 
+    /// <summary>
+    /// Adds the given beacons to the interal beacon list, ignoring beacons already added.
+    /// </summary>
+    /// <param name="beacons">Beacons to add to the beacon list</param>
     private void AddBeacons(Beacon[] beacons)
     {
         foreach (Beacon b in beacons)
@@ -103,11 +120,19 @@ class ProximityShapes : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Removes old, expired beacons that haven't been detected for 10 seconds
+    /// </summary>
     private void RemoveOldBeacons()
     {
         _beacons.FindAll(b => b.lastSeen.AddSeconds(10) < DateTime.Now).ForEach(b => _beacons.Remove(b));
     }
 
+    /// <summary>
+    /// Sets the UI text elements with the given range/distance of the beacon.
+    /// Also shows/hides the given prefabs depending on how far the beacon is.
+    /// </summary>
+    /// <param name="b">The beacon to use for setting properties</param>
     private void SetBeaconProperties(Beacon b)
     {
         range.text = b.range.ToString();
