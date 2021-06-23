@@ -60,7 +60,10 @@ public class ImageRecognitionHandler : MonoBehaviour
     }
 
     #region Implementation Details
-    // Get all immediate children of the parent game object
+    /// <summary>
+    /// Get all immediate children of the parent game object
+    /// </summary>
+    /// <param name="parentContainer"></param>
     private Dictionary<string, GameObject> GetImmediateChildrenGameObjects(GameObject parentContainer)
     {
         var childGameObjects = new Dictionary<string, GameObject>();
@@ -73,7 +76,10 @@ public class ImageRecognitionHandler : MonoBehaviour
         return childGameObjects;
     }
 
-    // Dynamically handle the activating and deactivating of multiple objects based on which image is tracked.
+    /// <summary>
+    /// Dynamically handle the activating and deactivating of multiple objects based on which image is tracked.
+    /// </summary>
+    /// <param name="trackedImage"></param>
     private void ActivateNewZoneForTrackedImage(ARTrackedImage trackedImage)
     {
         GameObject activeContainer;
@@ -98,9 +104,14 @@ public class ImageRecognitionHandler : MonoBehaviour
         }
     }
 
-    /* Get zone container that correlates to the image that has just been tracked.
-       If the container has already been instantiated, get it from the zone containers dictionary
-       Otherwise, instantiate the zone container and add it to the dictionary. */
+    /// <summary>
+    /// Get zone container that correlates to the image that has just been tracked.
+    /// If the container has already been instantiated, get it from the zone containers dictionary
+    /// Otherwise, instantiate the zone container and add it to the dictionary.
+    /// </summary>
+    /// <param name="prefabZoneContainer"></param>
+    /// <param name="trackedImage"></param>
+    /// <returns>Activated Zone Object</returns>
     private GameObject ActivateZoneContainer(GameObject prefabZoneContainer, ARTrackedImage trackedImage)
     {
         GameObject container;
@@ -121,7 +132,10 @@ public class ImageRecognitionHandler : MonoBehaviour
         }
     }
 
-    // Deactivate all zone containers that aren't associated with the currently tracked image
+    /// <summary>
+    /// Deactivate all zone containers that aren't associated with the currently tracked image
+    /// </summary>
+    /// <param name="activeZone"></param>
     private void DeactivateAllOtherZones(GameObject activeZone)
     {
         foreach (GameObject zone in _zoneContainers.Values)
@@ -134,12 +148,15 @@ public class ImageRecognitionHandler : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Deactivates all object states except the initial states. TODO: make more dynamic after state management has been introduced.
+    /// </summary>
+    /// <param name="activeZoneContainer"></param>
     private void DeactivateInactiveObjectStates(GameObject activeZoneContainer)
     {
         // in this case, zoneSubContainers should contain the Green, Blue, and Red containers for the active zone
         var zoneSubContainers = GetImmediateChildrenGameObjects(activeZoneContainer);
 
-        // get all the 3d objects for each subcontainer, iterate over them, and make sure only the first object in the container is active
         foreach(GameObject zoneSubContainer in zoneSubContainers.Values)
         {
             // ex: Green Cube, Green Capsule, etc.
