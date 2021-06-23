@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 
@@ -22,7 +23,7 @@ public class ImageRecognitionHandler : MonoBehaviour
     {
         Debug.Log("KEON LOG - Enter method: Awake");
         _arTrackedImageManager = FindObjectOfType<ARTrackedImageManager>();
-        _prefabZoneContainers = GetAllZoneContainers(_prefabContainer);
+        _prefabZoneContainers = GetImmediateChildrenGameObjects(_prefabContainer);
     }
 
     // When MonoBehaviour is enabled
@@ -59,19 +60,17 @@ public class ImageRecognitionHandler : MonoBehaviour
     }
 
     #region Implementation Details
-    // Get all immediate children of the parent prefab container - in this case, Zone1Container and Zone2Container
-    private Dictionary<string, GameObject> GetAllZoneContainers(GameObject parentPrefab)
+    // Get all immediate children of the parent game object
+    private Dictionary<string, GameObject> GetImmediateChildrenGameObjects(GameObject parentContainer)
     {
-        var zoneContainers = new Dictionary<string, GameObject>();
-        var parentTransform = parentPrefab.transform;
-        Debug.Log($"KEON LOG - parent of which to get children: {parentPrefab.name}");
+        var childGameObjects = new Dictionary<string, GameObject>();
+        var parentTransform = parentContainer.transform;
         foreach (Transform child in parentTransform)
         {
-            Debug.Log($"KEON LOG - Adding {child.gameObject.name} to zoneContainers dictionary.");
-            zoneContainers.Add(child.gameObject.name, child.gameObject);
+            childGameObjects.Add(child.gameObject.name, child.gameObject);
         }
 
-        return zoneContainers;
+        return childGameObjects;
     }
 
     // Dynamically handle the activating and deactivating of multiple objects based on which image is tracked.
@@ -83,15 +82,15 @@ public class ImageRecognitionHandler : MonoBehaviour
             case _zone1TrackedImageName:
                 _prefabZoneContainers.TryGetValue(_zone1PrefabContainerName, out activeContainer);
                 Debug.Log($"KEON LOG - activeContainer for jira-avatar: {activeContainer.name}");
-                GameObject zone1Container = GetZoneContainer(activeContainer, trackedImage);
-                zone1Container.SetActive(true);
+                GameObject zone1Container = ActivateZoneContainer(activeContainer, trackedImage);
+                DeactivateInactiveObjectStates(zone1Container);
                 DeactivateAllOtherZones(zone1Container);
                 break;
             case _zone2TrackedImageName:
                 _prefabZoneContainers.TryGetValue(_zone2PrefabContainerName, out activeContainer);
                 Debug.Log($"KEON LOG - activeContainer for shapes: {activeContainer.name}");
-                GameObject zone2Container = GetZoneContainer(activeContainer, trackedImage);
-                zone2Container.SetActive(true);
+                GameObject zone2Container = ActivateZoneContainer(activeContainer, trackedImage);
+                DeactivateInactiveObjectStates(zone2Container);
                 DeactivateAllOtherZones(zone2Container);
                 break;
             default:
@@ -102,13 +101,14 @@ public class ImageRecognitionHandler : MonoBehaviour
     /* Get zone container that correlates to the image that has just been tracked.
        If the container has already been instantiated, get it from the zone containers dictionary
        Otherwise, instantiate the zone container and add it to the dictionary. */
-    private GameObject GetZoneContainer(GameObject prefabZoneContainer, ARTrackedImage trackedImage)
+    private GameObject ActivateZoneContainer(GameObject prefabZoneContainer, ARTrackedImage trackedImage)
     {
         GameObject container;
         if (_zoneContainers.ContainsKey(prefabZoneContainer.name))
         {
             _zoneContainers.TryGetValue(prefabZoneContainer.name, out container);
             Debug.Log($"KEON LOG - found container: {container.name}");
+            container.SetActive(true);
             return container;
         } else
         {
@@ -116,6 +116,7 @@ public class ImageRecognitionHandler : MonoBehaviour
             container.name = prefabZoneContainer.name;
             Debug.Log($"KEON LOG - Instantiated container: {container.name}");
             _zoneContainers.Add(container.name, container);
+            container.SetActive(true);
             return container;
         }
     }
@@ -132,5 +133,30 @@ public class ImageRecognitionHandler : MonoBehaviour
             }
         }
     }
+
+    private void DeactivateInactiveObjectStates(GameObject activeZoneContainer)
+    {
+        // in this case, zoneSubContainers should contain the Green, Blue, and Red containers for the active zone
+        var zoneSubContainers = GetImmediateChildrenGameObjects(activeZoneContainer);
+
+        // get all the 3d objects for each subcontainer, iterate over them, and make sure only the first object in the container is active
+        foreach(GameObject zoneSubContainer in zoneSubContainers.Values)
+        {
+            // ex: Green Cube, Green Capsule, etc.
+            var subContainerGameObjects = GetImmediateChildrenGameObjects(zoneSubContainer);
+
+            // ensure only first game object in each sub-container is active
+            for(int i = 0; i < subContainerGameObjects.Count; i++)
+            {
+                if(subContainerGameObjects.Count > 1 && i > 0)
+                {
+                    subContainerGameObjects.ElementAt(i).Value.SetActive(false);
+                }
+            }
+
+        }
+
+    }
+
     #endregion
 }
