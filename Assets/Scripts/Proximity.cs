@@ -1,26 +1,21 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections;
 
 class Proximity : MonoBehaviour
 {
-    // GameObjects to show/hide according to proximity
+    // GameEvents to raise when proximity changes
     [SerializeField]
-    private GameObject objectImmediate;
-    [SerializeField]
-    private GameObject objectNear;
-    [SerializeField]
-    private GameObject objectFar;
+    private GameEvent proximityChangeEvent;
 
-    // UI text fields for displaying values
+    // Variables for persisting beacon status values
     [SerializeField]
-    private Text range;
+    private StringVariable range;
     [SerializeField]
-    private Text distance;
+    private StringVariable distance;
     [SerializeField]
-    private Text _statusText;
+    private StringVariable _statusText;
 
     private List<Beacon> _beacons = new List<Beacon>();
 
@@ -44,25 +39,25 @@ class Proximity : MonoBehaviour
                     break;
                 case BluetoothLowEnergyState.UNKNOWN:
                 case BluetoothLowEnergyState.RESETTING:
-                    _statusText.text = "Checking Device…";
+                    _statusText.Value = "Checking Device…";
                     break;
                 case BluetoothLowEnergyState.UNAUTHORIZED:
-                    _statusText.text = "You don't have the permission to use beacons.";
+                    _statusText.Value = "You don't have the permission to use beacons.";
                     break;
                 case BluetoothLowEnergyState.UNSUPPORTED:
-                    _statusText.text = "Your device doesn't support beacons.";
+                    _statusText.Value = "Your device doesn't support beacons.";
                     break;
                 case BluetoothLowEnergyState.POWERED_OFF:
-                    _statusText.text = "Enable Bluetooth";
+                    _statusText.Value = "Enable Bluetooth";
                     break;
                 case BluetoothLowEnergyState.POWERED_ON:
-                    _statusText.text = "Bluetooth already enabled";
+                    _statusText.Value = "Bluetooth already enabled";
                     break;
                 case BluetoothLowEnergyState.IBEACON_ONLY:
-                    _statusText.text = "iBeacon only";
+                    _statusText.Value = "iBeacon only";
                     break;
                 default:
-                    _statusText.text = "Unknown Error";
+                    _statusText.Value = "Unknown Error";
                     break;
             }
         };
@@ -135,11 +130,9 @@ class Proximity : MonoBehaviour
     /// <param name="b">The beacon to use for setting properties</param>
     private void SetBeaconProperties(Beacon b)
     {
-        range.text = b.range.ToString();
-        distance.text = b.accuracy.ToString();
-        objectImmediate.SetActive(b.range == BeaconRange.IMMEDIATE);
-        objectNear.SetActive(b.range == BeaconRange.NEAR);
-        objectFar.SetActive(b.range == BeaconRange.FAR);
+        range.Value = b.range.ToString();
+        distance.Value = b.accuracy.ToString();
+        proximityChangeEvent.Raise();
     }
 
     private void UpdateText()
