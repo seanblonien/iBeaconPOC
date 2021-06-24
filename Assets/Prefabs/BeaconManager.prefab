@@ -174,8 +174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   proximityChangeEvent: {fileID: 11400000, guid: 26aeee77f71ee473cbf78508eb11f9cd, type: 2}
-  range: {fileID: 11400000, guid: 8597505b797704447a1a0bc4021b502d, type: 2}
-  distance: {fileID: 11400000, guid: 8d61bd80aed064a15913c44a6d01b902, type: 2}
+  virtualObject: {fileID: 11400000, guid: 4e9783ced23c54066a2b95f0e98ef05a, type: 2}
   _statusText: {fileID: 11400000, guid: 1c0e9d62592544c869a1984120536062, type: 2}
 --- !u!1 &6037648926383312637
 GameObject:

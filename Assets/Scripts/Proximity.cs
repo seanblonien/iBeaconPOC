@@ -11,9 +11,8 @@ class Proximity : MonoBehaviour
 
     // Variables for persisting beacon status values
     [SerializeField]
-    private StringVariable range;
-    [SerializeField]
-    private StringVariable distance;
+    private VirtualObjectBase virtualObject;
+
     [SerializeField]
     private StringVariable _statusText;
 
@@ -130,8 +129,8 @@ class Proximity : MonoBehaviour
     /// <param name="b">The beacon to use for setting properties</param>
     private void SetBeaconProperties(Beacon b)
     {
-        range.Value = b.range.ToString();
-        distance.Value = b.accuracy.ToString();
+        virtualObject.range = b.range;
+        virtualObject.distance = b.accuracy;
         proximityChangeEvent.Raise();
     }
 

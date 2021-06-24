@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48ec6c3e6ab444aa48626d0ee715c837, type: 3}
   m_Name: SoilSensor_01
   m_EditorClassIdentifier: 
-  ObjectId: SoilSensoir_01
   IsFound: 0
-  BeaconId: 
-  ProximityStateAtLastInteraction: 
+  UUID: f7bd22e8-121a-4105-b7f2-e5c94f01d197
+  Major: 1
+  Minor: 0
+  range: 0
+  distance: 0

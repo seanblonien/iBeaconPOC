@@ -10,19 +10,20 @@ public class iBeaconScene_Manager : MonoBehaviour
     [SerializeField]
     private Text distance;
     [SerializeField]
-    private Text status;
+    private Text isFoundText;
+    [SerializeField]
+    private Text statusText;
 
     [SerializeField]
-    private StringVariable rangeValue;
+    private VirtualObjectBase beacon;
     [SerializeField]
-    private StringVariable distanceValue;
-    [SerializeField]
-    private StringVariable statusValue;
+    private StringVariable status;
 
     public void Update()
     {
-        range.text = rangeValue.Value;
-        distance.text = distanceValue.Value;
-        status.text = statusValue.Value;
+        range.text = beacon.range.ToString();
+        distance.text = beacon.distance.ToString();
+        isFoundText.text = beacon.IsFound.ToString();
+        statusText.text = status.Value;
     }
 }
