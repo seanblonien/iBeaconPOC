@@ -23,7 +23,7 @@ public class iBeaconScene_Manager : MonoBehaviour
     {
         range.text = beacon.range.ToString();
         distance.text = beacon.distance.ToString();
-        isFoundText.text = beacon.IsFound.ToString();
+        isFoundText.text = beacon.isFound.ToString();
         statusText.text = status.Value;
     }
 }

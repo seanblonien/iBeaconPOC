@@ -4,62 +4,79 @@ using UnityEngine;
 
 public class VirtualObjectActor : MonoBehaviour
 {
-
-    public GameObject immediateObject;
-    public GameObject nearObject;
-    public GameObject farObject;
-    public GameObject foundObject;
+    // Camera in Scene
     private Camera aRCamera;
+    // Game object instances for this object, dynamically created from prefabs
+    private GameObject immediateObject;
+    private GameObject nearObject;
+    private GameObject farObject;
+    private GameObject foundObject;
 
-    public VirtualObjectBase objectStateContainer;
+    // Data for this virtual object
+    public VirtualObjectBase virtualObject;
 
-    public void Start()
+    private readonly string ComapreTag = "VirtualObject";
+    private bool hasInit = false;
+
+    public void Init(string newName, VirtualObjectBase virtualObjectBase)
     {
-        SetObjectsActive(false, false, false, false);
+        name = newName;
+        virtualObject = virtualObjectBase;
+        transform.position += virtualObject.offset;
+        immediateObject = Instantiate(virtualObject.immediatePrefab, transform);
+        nearObject = Instantiate(virtualObject.nearPrefab, transform);
+        farObject = Instantiate(virtualObject.farPrefab, transform);
+        foundObject = Instantiate(virtualObject.foundPrefab, transform);
         aRCamera = FindObjectOfType<Camera>();
-        Debug.Log($"Touch - Camera: {aRCamera}");
+        Debug.Log($"KEON LOG - created virtual object actor at location {transform.position}");
+        SetObjectsActive(false, false, false, false);
+        hasInit = true;
     }
 
     public void Update()
     {
-        if(Input.touchCount > 0)
+        if(hasInit)
+        {
+            HandleTouch();
+            if (virtualObject.isFound)
+            {
+                SetFoundObjectActive();
+            }
+            else
+            {
+                if (virtualObject.range == BeaconRange.IMMEDIATE)
+                {
+                    SetImmediateObjectActive();
+                }
+                else if (virtualObject.range == BeaconRange.NEAR)
+                {
+                    SetNearObjectActive();
+                }
+                else // Used for both FAR and UNKNOWN
+                {
+                    SetFarObjectActive();
+                }
+            }
+        }
+    }
+
+    private void HandleTouch()
+    {
+        if (Input.touchCount > 0)
         {
             Touch touch = Input.GetTouch(0);
             // Detect if object is clicked
             if (touch.phase == TouchPhase.Began)
             {
-                Debug.Log("Touch - Begin touch");
                 Ray raycast = aRCamera.ScreenPointToRay(touch.position);
                 RaycastHit raycastHit;
                 if (Physics.Raycast(raycast, out raycastHit))
                 {
-                    Debug.Log("Touch - Hit");
-                    if (raycastHit.collider.CompareTag("VirtualObject"))
+                    if (raycastHit.collider.CompareTag(ComapreTag))
                     {
-                        objectStateContainer.IsFound = true;
-                        Debug.Log("Touch - Found");
+                        virtualObject.isFound = true;
                     }
                 }
-            }
-        }
-
-        if(objectStateContainer.IsFound)
-        {
-            SetFoundObjectActive();
-        }
-        else
-        {
-            if (objectStateContainer.range == BeaconRange.IMMEDIATE)
-            {
-                SetImmediateObjectActive();
-            }
-            else if (objectStateContainer.range == BeaconRange.NEAR)
-            {
-                SetNearObjectActive();
-            }
-            else if (objectStateContainer.range == BeaconRange.FAR)
-            {
-                SetFarObjectActive();
             }
         }
     }

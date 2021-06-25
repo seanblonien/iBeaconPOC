@@ -5,23 +5,22 @@ using System.Collections;
 
 class Proximity : MonoBehaviour
 {
-    // GameEvents to raise when proximity changes
+    // Scriptable Object for persisting beacon status values
     [SerializeField]
-    private GameEvent proximityChangeEvent;
+    private List<VirtualObjectBase> virtualObjects;
 
-    // Variables for persisting beacon status values
-    [SerializeField]
-    private VirtualObjectBase virtualObject;
-
+    // Bluetooth status text value
     [SerializeField]
     private StringVariable _statusText;
 
+    // Pirvate list of beacons
     private List<Beacon> _beacons = new List<Beacon>();
 
     // Co-routine for enabling bluetooth asynchronously
     IEnumerator coroutine;
 
-    readonly private float bluetoothWaitTime = 1f;
+    // Time to wait inbetween intervals of hecking if bluetooth has been turned on
+    readonly private float bluetoothWaitTime = 0.5f;
 
     /// <summary>
     /// Initializes Bluetooth and registers the BeaconRangeChange event with the iBeacon receiver
@@ -79,7 +78,7 @@ class Proximity : MonoBehaviour
             yield return new WaitForSeconds(bluetoothWaitTime);
         }
         iBeaconReceiver.Scan();
-        Debug.Log("Listening for iBeacons");
+        Debug.Log("Now listening for iBeacons");
         yield break;
     }
 
@@ -91,11 +90,11 @@ class Proximity : MonoBehaviour
     {
         AddBeacons(beacons);
         RemoveOldBeacons();
-        UpdateText();
+        PersistBeaconValues();
     }
 
     /// <summary>
-    /// Adds the given beacons to the interal beacon list, ignoring beacons already added.
+    /// Adds the given beacons to the interal beacon list, updating beacons already added.
     /// </summary>
     /// <param name="beacons">Beacons to add to the beacon list</param>
     private void AddBeacons(Beacon[] beacons)
@@ -123,18 +122,20 @@ class Proximity : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the UI text elements with the given range/distance of the beacon.
-    /// Also shows/hides the given prefabs depending on how far the beacon is.
+    /// Persists the data values for this beacon to the correspondng to its virtual object.
     /// </summary>
-    /// <param name="b">The beacon to use for setting properties</param>
+    /// <param name="b">The beacon to use for getting data values to persist</param>
     private void SetBeaconProperties(Beacon b)
     {
-        virtualObject.range = b.range;
-        virtualObject.distance = b.accuracy;
-        proximityChangeEvent.Raise();
+        var virtualObject = virtualObjects.Find((obj) => obj.ObjectId == b.ObjectId);
+        if(virtualObject != null)
+        {
+            virtualObject.range = b.range;
+            virtualObject.distance = b.accuracy;
+        }
     }
 
-    private void UpdateText()
+    private void PersistBeaconValues()
     {
         _beacons.ForEach(SetBeaconProperties);
     }

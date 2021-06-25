@@ -9,6 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f50eee3c13e2e45c48a796ce01c30204, type: 3}
-  m_Name: ProximityChange
+  m_Script: {fileID: 11500000, guid: f86e531697e754de7a195cfc5d1643c7, type: 3}
+  m_Name: ActiveZone
   m_EditorClassIdentifier: 
+  value: 

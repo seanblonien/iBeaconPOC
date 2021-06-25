@@ -44,6 +44,12 @@ public class Beacon : IEquatable<Beacon> {
 		}
 	}
 
+	public string ObjectId {
+		get {
+			return _UUID + "_" + _major + "_" + _minor;
+		}
+	}
+
 	public string instance {
 		get {
 			return _instance;
